@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useLanguage } from '../context/LanguageContext';
+import React, { useState, useEffect } from 'react';
+import { useLanguage } from '../context/LanguageContext'
 import { useTheme } from '../context/ThemeContext';
-import { mockAnnouncements } from '../data/mockData';
+import { announcementAPI } from '../services/api';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Calendar, ChevronDown, ChevronUp } from 'lucide-react';
@@ -11,6 +11,7 @@ const AnnouncementCard = ({ announcement }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { t } = useLanguage();
   const { currentTheme } = useTheme();
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
   const typeColors = {
     department: '#DC2626',
@@ -41,8 +42,8 @@ const AnnouncementCard = ({ announcement }) => {
               <span className="text-sm font-medium" style={{ color: currentTheme.text }}>
                 {announcement.date}
               </span>
-              <Badge style={{ backgroundColor: typeColors[announcement.type] }}>
-                {typeLabels[announcement.type]}
+              <Badge style={{ backgroundColor: typeColors[announcement.announcement_type] }}>
+                {typeLabels[announcement.announcement_type]}
               </Badge>
             </div>
             <CardTitle 
@@ -55,6 +56,13 @@ const AnnouncementCard = ({ announcement }) => {
         </div>
       </CardHeader>
       <CardContent>
+        {announcement.image_url && (
+          <img 
+            src={`${BACKEND_URL}${announcement.image_url}`}
+            alt={announcement.title}
+            className="w-full h-48 object-cover rounded-lg mb-4"
+          />
+        )}
         <div 
           className="prose max-w-none"
           style={{ color: currentTheme.text }}
@@ -74,7 +82,7 @@ const AnnouncementCard = ({ announcement }) => {
             {isExpanded ? (
               <>
                 <ChevronUp className="h-4 w-4 mr-1" />
-                {t('home.readMore')}
+                Daha Az
               </>
             ) : (
               <>
@@ -92,6 +100,38 @@ const AnnouncementCard = ({ announcement }) => {
 const AnnouncementList = () => {
   const { t } = useLanguage();
   const { currentTheme } = useTheme();
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        setLoading(true);
+        const data = await announcementAPI.getAll();
+        setAnnouncements(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching announcements:', err);
+        setError('Duyurular yüklenemedi');
+        // Fallback to mock data if API fails
+        const { mockAnnouncements } = await import('../data/mockData');
+        setAnnouncements(mockAnnouncements);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnnouncements();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="text-center py-8" style={{ color: currentTheme.text }}>
+        Yükleniyor...
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -101,7 +141,12 @@ const AnnouncementList = () => {
       >
         {t('home.latestAnnouncements')}
       </h2>
-      {mockAnnouncements.map((announcement) => (
+      {error && (
+        <div className="text-sm text-yellow-600 mb-4">
+          {error} (Mock veri gösteriliyor)
+        </div>
+      )}
+      {announcements.map((announcement) => (
         <AnnouncementCard key={announcement.id} announcement={announcement} />
       ))}
     </div>

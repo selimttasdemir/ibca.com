@@ -91,6 +91,15 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     if (editingCourse) {
+      let parsedContent = { videos: [], pdfs: [], notes: '' };
+      if (editingCourse.content) {
+        try {
+          parsedContent = JSON.parse(editingCourse.content);
+        } catch (e) {
+          console.error('Error parsing course content:', e);
+        }
+      }
+      
       setCourseForm({
         code: editingCourse.code,
         name: editingCourse.name,
@@ -98,7 +107,8 @@ const AdminDashboard = () => {
         semester: editingCourse.semester,
         credits: editingCourse.credits,
         description: editingCourse.description,
-        is_active: editingCourse.is_active
+        is_active: editingCourse.is_active,
+        content: parsedContent
       });
     }
   }, [editingCourse]);

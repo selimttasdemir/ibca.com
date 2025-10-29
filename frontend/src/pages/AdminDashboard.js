@@ -216,8 +216,10 @@ const AdminDashboard = () => {
       semester: 'Güz',
       credits: 3,
       description: '',
-      is_active: true
+      is_active: true,
+      content: { videos: [], pdfs: [], notes: '' }
     });
+    setNewVideo({ title: '', description: '', url: '' });
     setCourseDialog(true);
   };
 

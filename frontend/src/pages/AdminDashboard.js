@@ -59,9 +59,12 @@ const AdminDashboard = () => {
     semester: 'Güz',
     credits: 3,
     description: '',
-    is_active: true
+    is_active: true,
+    content: { videos: [], pdfs: [], notes: '' }
   });
   const [editingCourse, setEditingCourse] = useState(null);
+  const [newVideo, setNewVideo] = useState({ title: '', description: '', url: '' });
+  const [uploadingPDF, setUploadingPDF] = useState(false);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 

@@ -24,6 +24,9 @@ export const AuthProvider = ({ children }) => {
       
       const token = data.access_token;
       
+      // Save token first so subsequent API calls can use it
+      localStorage.setItem('authToken', token);
+      
       // Get user info
       const userInfo = await authAPI.getCurrentUser();
       const userData = { 
@@ -33,16 +36,17 @@ export const AuthProvider = ({ children }) => {
         full_name: userInfo.full_name
       };
       
-      localStorage.setItem('authToken', token);
       localStorage.setItem('userData', JSON.stringify(userData));
       setUser(userData);
       
       return { success: true };
     } catch (error) {
       console.error('Login error:', error);
+      // Clean up on error
+      localStorage.removeItem('authToken');
       return { 
         success: false, 
-        error: error.response?.data?.detail || 'Login failed. Please try again.' 
+        error: error.response?.data?.detail || 'Giriş başarısız. Lütfen tekrar deneyin.' 
       };
     }
   };

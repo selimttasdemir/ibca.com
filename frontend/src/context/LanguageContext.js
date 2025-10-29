@@ -18,7 +18,8 @@ export const LanguageProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('language', language);
     document.documentElement.setAttribute('lang', language);
-    document.documentElement.setAttribute('dir', language === 'ar' ? 'rtl' : 'ltr');
+    // RTL disabled - only text translation for Arabic
+    // document.documentElement.setAttribute('dir', language === 'ar' ? 'rtl' : 'ltr');
   }, [language]);
 
   const t = (key) => {

@@ -589,70 +589,165 @@ const AdminDashboard = () => {
 
         {/* Course Dialog */}
         <Dialog open={courseDialog} onOpenChange={setCourseDialog}>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingCourse ? 'Ders Düzenle' : 'Yeni Ders Ekle'}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleCourseSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Ders Kodu *</Label>
+              {/* Basic Info */}
+              <div className="border-b pb-4">
+                <h3 className="font-semibold mb-3">Temel Bilgiler</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label>Ders Kodu *</Label>
+                    <Input 
+                      required
+                      value={courseForm.code}
+                      onChange={(e) => setCourseForm(prev => ({...prev, code: e.target.value}))}
+                    />
+                  </div>
+                  <div>
+                    <Label>Kredi</Label>
+                    <Input 
+                      type="number"
+                      value={courseForm.credits}
+                      onChange={(e) => setCourseForm(prev => ({...prev, credits: parseInt(e.target.value)}))}
+                    />
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <Label>Ders Adı *</Label>
                   <Input 
                     required
-                    value={courseForm.code}
-                    onChange={(e) => setCourseForm(prev => ({...prev, code: e.target.value}))}
+                    value={courseForm.name}
+                    onChange={(e) => setCourseForm(prev => ({...prev, name: e.target.value}))}
                   />
                 </div>
-                <div>
-                  <Label>Kredi</Label>
+                <div className="grid grid-cols-2 gap-4 mt-3">
+                  <div>
+                    <Label>Seviye</Label>
+                    <select 
+                      className="w-full p-2 border rounded"
+                      value={courseForm.level}
+                      onChange={(e) => setCourseForm(prev => ({...prev, level: e.target.value}))}
+                    >
+                      <option value="Lisans">Lisans</option>
+                      <option value="Yüksek Lisans">Yüksek Lisans</option>
+                      <option value="Doktora">Doktora</option>
+                    </select>
+                  </div>
+                  <div>
+                    <Label>Dönem</Label>
+                    <select 
+                      className="w-full p-2 border rounded"
+                      value={courseForm.semester}
+                      onChange={(e) => setCourseForm(prev => ({...prev, semester: e.target.value}))}
+                    >
+                      <option value="Güz">Güz</option>
+                      <option value="Bahar">Bahar</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <Label>Açıklama</Label>
+                  <Textarea 
+                    rows={3}
+                    value={courseForm.description}
+                    onChange={(e) => setCourseForm(prev => ({...prev, description: e.target.value}))}
+                  />
+                </div>
+              </div>
+
+              {/* Videos Section */}
+              <div className="border-b pb-4">
+                <h3 className="font-semibold mb-3">Ders Videoları (YouTube)</h3>
+                <div className="space-y-2 mb-3">
                   <Input 
-                    type="number"
-                    value={courseForm.credits}
-                    onChange={(e) => setCourseForm(prev => ({...prev, credits: parseInt(e.target.value)}))}
+                    placeholder="Video Başlığı"
+                    value={newVideo.title}
+                    onChange={(e) => setNewVideo({...newVideo, title: e.target.value})}
                   />
+                  <Input 
+                    placeholder="Açıklama (opsiyonel)"
+                    value={newVideo.description}
+                    onChange={(e) => setNewVideo({...newVideo, description: e.target.value})}
+                  />
+                  <Input 
+                    placeholder="YouTube URL (https://www.youtube.com/watch?v=...)"
+                    value={newVideo.url}
+                    onChange={(e) => setNewVideo({...newVideo, url: e.target.value})}
+                  />
+                  <Button type="button" onClick={handleAddVideo} size="sm" variant="outline">
+                    + Video Ekle
+                  </Button>
                 </div>
+                {courseForm.content.videos && courseForm.content.videos.length > 0 && (
+                  <div className="space-y-2">
+                    {courseForm.content.videos.map((video, index) => (
+                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">{video.title}</p>
+                          <p className="text-xs text-gray-500">{video.url}</p>
+                        </div>
+                        <Button 
+                          type="button" 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleRemoveVideo(index)}
+                        >
+                          ✕
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-              <div>
-                <Label>Ders Adı *</Label>
+
+              {/* PDFs Section */}
+              <div className="border-b pb-4">
+                <h3 className="font-semibold mb-3">Ders Materyalleri (PDF)</h3>
                 <Input 
-                  required
-                  value={courseForm.name}
-                  onChange={(e) => setCourseForm(prev => ({...prev, name: e.target.value}))}
+                  type="file" 
+                  accept=".pdf"
+                  onChange={handlePDFUpload}
+                  disabled={uploadingPDF}
                 />
+                {uploadingPDF && <p className="text-sm mt-1">Yükleniyor...</p>}
+                {courseForm.content.pdfs && courseForm.content.pdfs.length > 0 && (
+                  <div className="space-y-2 mt-3">
+                    {courseForm.content.pdfs.map((pdf, index) => (
+                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">{pdf.title}</p>
+                        </div>
+                        <Button 
+                          type="button" 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleRemovePDF(index)}
+                        >
+                          ✕
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Seviye</Label>
-                  <select 
-                    className="w-full p-2 border rounded"
-                    value={courseForm.level}
-                    onChange={(e) => setCourseForm(prev => ({...prev, level: e.target.value}))}
-                  >
-                    <option value="Lisans">Lisans</option>
-                    <option value="Yüksek Lisans">Yüksek Lisans</option>
-                    <option value="Doktora">Doktora</option>
-                  </select>
-                </div>
-                <div>
-                  <Label>Dönem</Label>
-                  <select 
-                    className="w-full p-2 border rounded"
-                    value={courseForm.semester}
-                    onChange={(e) => setCourseForm(prev => ({...prev, semester: e.target.value}))}
-                  >
-                    <option value="Güz">Güz</option>
-                    <option value="Bahar">Bahar</option>
-                  </select>
-                </div>
-              </div>
-              <div>
-                <Label>Açıklama</Label>
+
+              {/* Notes Section */}
+              <div className="pb-4">
+                <h3 className="font-semibold mb-3">Ders Notları</h3>
                 <Textarea 
-                  rows={4}
-                  value={courseForm.description}
-                  onChange={(e) => setCourseForm(prev => ({...prev, description: e.target.value}))}
+                  rows={6}
+                  placeholder="Ders notlarını buraya yazın..."
+                  value={courseForm.content.notes || ''}
+                  onChange={(e) => setCourseForm(prev => ({
+                    ...prev,
+                    content: { ...prev.content, notes: e.target.value }
+                  }))}
                 />
               </div>
+
               <div className="flex space-x-2">
                 <Button type="submit" className="flex-1" style={{ backgroundColor: currentTheme.accent }}>
                   {editingCourse ? 'Güncelle' : 'Kaydet'}

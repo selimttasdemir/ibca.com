@@ -10,6 +10,7 @@ import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import CVPage from './pages/CVPage';
 import CoursesPage from './pages/CoursesPage';
+import CourseDetailPage from './pages/CourseDetailPage';
 import PublicationsPage from './pages/PublicationsPage';
 import GalleryPage from './pages/GalleryPage';
 import AdminLoginPage from './pages/AdminLoginPage';
@@ -28,6 +29,7 @@ function App() {
                   <Route path="/" element={<HomePage />} />
                   <Route path="/cv" element={<CVPage />} />
                   <Route path="/courses" element={<CoursesPage />} />
+                  <Route path="/courses/:courseId" element={<CourseDetailPage />} />
                   <Route path="/publications" element={<PublicationsPage />} />
                   <Route path="/gallery" element={<GalleryPage />} />
                   <Route path="/admin" element={<AdminLoginPage />} />

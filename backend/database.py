@@ -5,17 +5,16 @@ import os
 from pathlib import Path
 
 # Database configuration
-# Use MongoDB (production)
-DATABASE_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/academic_db')
+# SQLite for deployment (file-based, no external DB needed)
+ROOT_DIR = Path(__file__).parent
+DATABASE_URL = f"sqlite:///{ROOT_DIR}/academic_site.db"
 
-# SQLite (local development - comment out for production)
-# ROOT_DIR = Path(__file__).parent
-# DATABASE_URL = f"sqlite:///{ROOT_DIR}/academic_site.db"
+# Note: If PostgreSQL is needed in future, uncomment below:
+# DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://user:password@localhost/academic_db')
 
 engine = create_engine(
     DATABASE_URL,
-    # connect_args only needed for SQLite
-    # connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {},
+    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {},
     echo=False
 )
 

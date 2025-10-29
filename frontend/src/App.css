@@ -1,34 +1,79 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* Global Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
-}
-
-.App-header {
-    background-color: #0f0f10;
+.App {
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
 }
 
-.App-link {
-    color: #61dafb;
+/* Theme Variables - Classic Theme */
+[data-theme="classic"] {
+    --theme-primary: #6B1515;
+    --theme-secondary: #F5E6D3;
+    --theme-background: #8B3A3A;
+    --theme-card: #FFF8E7;
+    --theme-text: #2D1B1B;
+    --theme-border: #D4AF37;
+    --theme-accent: #C17F3E;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
+/* Theme Variables - Modern Theme */
+[data-theme="modern"] {
+    --theme-primary: #1E3A8A;
+    --theme-secondary: #E0E7FF;
+    --theme-background: #F1F5F9;
+    --theme-card: #FFFFFF;
+    --theme-text: #1E293B;
+    --theme-border: #CBD5E1;
+    --theme-accent: #3B82F6;
+}
+
+/* Smooth transitions */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--theme-background);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--theme-accent);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--theme-primary);
+}
+
+/* RTL Support for Arabic */
+[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
+[dir="rtl"] .flex {
+    flex-direction: row-reverse;
+}
+
+/* Responsive font sizes */
+@media (max-width: 768px) {
+    html {
+        font-size: 14px;
     }
-    to {
-        transform: rotate(360deg);
+}
+
+/* Print styles */
+@media print {
+    header, footer {
+        display: none;
     }
 }

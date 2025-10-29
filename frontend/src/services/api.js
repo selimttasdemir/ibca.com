@@ -108,6 +108,11 @@ export const courseAPI = {
     return response.data;
   },
   
+  getById: async (id) => {
+    const response = await api.get(`/courses/${id}`);
+    return response.data;
+  },
+  
   create: async (data) => {
     const response = await api.post('/courses', data);
     return response.data;

@@ -231,11 +231,16 @@ const AdminDashboard = () => {
   const handleCourseSubmit = async (e) => {
     e.preventDefault();
     try {
+      const dataToSend = {
+        ...courseForm,
+        content: JSON.stringify(courseForm.content)
+      };
+      
       if (editingCourse) {
-        await courseAPI.update(editingCourse.id, courseForm);
+        await courseAPI.update(editingCourse.id, dataToSend);
         toast({ title: 'Başarılı', description: 'Ders güncellendi!' });
       } else {
-        await courseAPI.create(courseForm);
+        await courseAPI.create(dataToSend);
         toast({ title: 'Başarılı', description: 'Ders oluşturuldu!' });
       }
       setCourseDialog(false);
@@ -243,6 +248,82 @@ const AdminDashboard = () => {
     } catch (error) {
       toast({ title: 'Hata', description: error.response?.data?.detail || 'Bir hata oluştu', variant: 'destructive' });
     }
+  };
+
+  const handleAddVideo = () => {
+    if (!newVideo.title || !newVideo.url) {
+      toast({ title: 'Uyarı', description: 'Video başlığı ve URL gerekli', variant: 'destructive' });
+      return;
+    }
+    
+    setCourseForm(prev => ({
+      ...prev,
+      content: {
+        ...prev.content,
+        videos: [...(prev.content.videos || []), { ...newVideo }]
+      }
+    }));
+    setNewVideo({ title: '', description: '', url: '' });
+    toast({ title: 'Başarılı', description: 'Video eklendi!' });
+  };
+
+  const handleRemoveVideo = (index) => {
+    setCourseForm(prev => ({
+      ...prev,
+      content: {
+        ...prev.content,
+        videos: prev.content.videos.filter((_, i) => i !== index)
+      }
+    }));
+  };
+
+  const handlePDFUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setUploadingPDF(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/publications/upload-pdf`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        },
+        body: formData
+      });
+      
+      const result = await response.json();
+      
+      setCourseForm(prev => ({
+        ...prev,
+        content: {
+          ...prev.content,
+          pdfs: [...(prev.content.pdfs || []), {
+            title: file.name,
+            description: '',
+            url: result.url
+          }]
+        }
+      }));
+      
+      toast({ title: 'Başarılı', description: 'PDF yüklendi!' });
+    } catch (error) {
+      toast({ title: 'Hata', description: 'PDF yüklenirken hata oluştu', variant: 'destructive' });
+    } finally {
+      setUploadingPDF(false);
+    }
+  };
+
+  const handleRemovePDF = (index) => {
+    setCourseForm(prev => ({
+      ...prev,
+      content: {
+        ...prev.content,
+        pdfs: prev.content.pdfs.filter((_, i) => i !== index)
+      }
+    }));
   };
 
   const handleCourseDelete = async (id) => {

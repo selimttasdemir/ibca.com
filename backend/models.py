@@ -42,6 +42,7 @@ class Course(Base):
     description = Column(Text)
     syllabus_url = Column(String(500))
     materials_url = Column(String(500))
+    content = Column(Text)  # JSON: videos, pdfs, notes
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

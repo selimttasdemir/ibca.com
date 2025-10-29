@@ -180,6 +180,14 @@ def get_courses(
         query = query.filter(models.Course.level == level)
     return query.order_by(models.Course.code).offset(skip).limit(limit).all()
 
+@api_router.get("/courses/{course_id}", response_model=schemas.Course)
+def get_course(course_id: int, db: Session = Depends(get_db)):
+    """Get single course with details"""
+    course = db.query(models.Course).filter(models.Course.id == course_id).first()
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
+    return course
+
 @api_router.post("/courses", response_model=schemas.Course)
 async def create_course(
     course: schemas.CourseCreate,

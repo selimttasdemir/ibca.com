@@ -10,7 +10,7 @@ import schemas
 from database import get_db
 
 # Security configuration
-SECRET_KEY = "your-secret-key-change-in-production-12345"  # Change this in production!
+SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-change-in-production-12345')
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
 

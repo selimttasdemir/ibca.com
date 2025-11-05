@@ -13,7 +13,16 @@ import axios from 'axios';
 
 // Backend URL yapılandırması
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8000';
-const API_BASE_URL = `${BACKEND_URL}/api`;
+// Trailing slash'i kaldır
+const cleanBackendURL = BACKEND_URL.endsWith('/') ? BACKEND_URL.slice(0, -1) : BACKEND_URL;
+const API_BASE_URL = `${cleanBackendURL}/api`;
+
+// Debug: API URL'i konsola yazdır
+console.log('🔗 API Configuration:', {
+  BACKEND_URL,
+  API_BASE_URL,
+  NODE_ENV: process.env.NODE_ENV
+});
 
 /**
  * Axios instance oluştur

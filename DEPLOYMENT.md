@@ -109,12 +109,18 @@ REACT_APP_BACKEND_URL=https://ibca-backend.onrender.com
    ```
 4. **Environment Variables**:
    ```
-   REACT_APP_BACKEND_URL = https://ibca-backend.onrender.com
+   REACT_APP_BACKEND_URL = https://ibca-com.onrender.com
    ```
 5. **Create Static Site**
 
+**⚠️ ÖNEMLİ**: React Router için `frontend/public/_redirects` dosyası oluşturuldu:
+```
+/*    /index.html   200
+```
+Bu dosya otomatik olarak build klasörüne kopyalanır ve tüm route'ların çalışmasını sağlar.
+
 ### Adım 3: Frontend URL'i Al
-- Deploy bitince: `https://ibca-frontend.onrender.com`
+- Deploy bitince: `https://ibrahimcayiroglu-com.onrender.com`
 
 ---
 

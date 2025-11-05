@@ -1369,6 +1369,7 @@ app.add_middleware(
         "http://localhost:3000",
         "https://ibca-com.onrender.com",
         "https://ibca-frontend.onrender.com",
+        "https://ibrahimcayiroglu-com.onrender.com",
     ],
     allow_methods=["*"],
     allow_headers=["*"],

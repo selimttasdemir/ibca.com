@@ -2,9 +2,9 @@ import React from 'react';
 import { useLanguage, languages } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
-import { Globe, Sun, Moon, LogOut } from 'lucide-react';
+import { Globe, Sun, Moon, LogOut, GraduationCap } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,8 +15,9 @@ import {
 const Header = () => {
   const { language, setLanguage, t } = useLanguage();
   const { theme, toggleTheme, currentTheme } = useTheme();
-  const { user, logout } = useAuth();
+  const { user, logout, student, studentLogout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const navItems = [
     { key: 'home', path: '/' },
@@ -94,7 +95,43 @@ const Header = () => {
               {theme === 'classic' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
 
-            {/* Logout (if authenticated) */}
+            {/* Student Login/Logout */}
+            {student ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    style={{ color: currentTheme.secondary }}
+                    className="hidden md:flex items-center gap-2"
+                  >
+                    <GraduationCap className="h-4 w-4" />
+                    {student.full_name}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => navigate('/student-dashboard')}>
+                    Panel
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={studentLogout}>
+                    Çıkış Yap
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : !user && (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => navigate('/student-login')}
+                style={{ color: currentTheme.secondary }}
+                className="hidden md:flex items-center gap-2"
+              >
+                <GraduationCap className="h-4 w-4" />
+                Öğrenci Girişi
+              </Button>
+            )}
+
+            {/* Admin Logout (if authenticated) */}
             {user && (
               <Button 
                 variant="ghost" 

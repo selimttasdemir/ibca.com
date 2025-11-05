@@ -4,11 +4,14 @@ import { useTheme } from '../context/ThemeContext';
 import { announcementAPI } from '../services/api';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { Calendar, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from './ui/dialog';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 const AnnouncementCard = ({ announcement }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
   const { t } = useLanguage();
   const { currentTheme } = useTheme();
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -57,19 +60,49 @@ const AnnouncementCard = ({ announcement }) => {
       </CardHeader>
       <CardContent>
         {announcement.image_url && (
-          <img 
-            src={`${BACKEND_URL}${announcement.image_url}`}
-            alt={announcement.title}
-            className="w-full h-48 object-cover rounded-lg mb-4"
-          />
+          <>
+            <img 
+              src={`${BACKEND_URL}${announcement.image_url}`}
+              alt={announcement.title}
+              className="w-full h-48 object-cover rounded-lg mb-4 cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={() => setImageModalOpen(true)}
+              title="Resmi büyütmek için tıklayın"
+            />
+            
+            {/* Image Modal */}
+            <Dialog open={imageModalOpen} onOpenChange={setImageModalOpen}>
+              <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 overflow-hidden bg-black/95">
+                <VisuallyHidden>
+                  <DialogTitle>{announcement.title}</DialogTitle>
+                  <DialogDescription>Duyuru görseli tam ekran görünümü</DialogDescription>
+                </VisuallyHidden>
+                <div className="relative w-full h-full flex items-center justify-center p-4">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-4 right-4 z-50 bg-white/10 hover:bg-white/20 text-white rounded-full"
+                    onClick={() => setImageModalOpen(false)}
+                  >
+                    <X className="h-6 w-6" />
+                  </Button>
+                  <img 
+                    src={`${BACKEND_URL}${announcement.image_url}`}
+                    alt={announcement.title}
+                    className="max-w-full max-h-[90vh] object-contain rounded-lg"
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
+          </>
         )}
         <div 
-          className="prose max-w-none"
+          className="prose prose-sm max-w-none"
           style={{ color: currentTheme.text }}
         >
-          <p className={`${!isExpanded && 'line-clamp-3'}`}>
-            {announcement.content}
-          </p>
+          <div 
+            className={`${!isExpanded && 'line-clamp-3'}`}
+            dangerouslySetInnerHTML={{ __html: announcement.content }}
+          />
         </div>
         {announcement.content.length > 150 && (
           <Button

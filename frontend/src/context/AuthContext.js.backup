@@ -4,30 +4,19 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [student, setStudent] = useState(null); // Öğrenci state'i
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Admin token kontrolü
+    // Check for stored auth token
     const token = localStorage.getItem('authToken');
     const userData = localStorage.getItem('userData');
     
     if (token && userData) {
       setUser(JSON.parse(userData));
     }
-
-    // Öğrenci token kontrolü
-    const studentToken = localStorage.getItem('studentToken');
-    const studentData = localStorage.getItem('studentData');
-    
-    if (studentToken && studentData) {
-      setStudent(JSON.parse(studentData));
-    }
-
     setLoading(false);
   }, []);
 
-  // Admin giriş
   const login = async (username, password) => {
     try {
       const { authAPI } = await import('../services/api');
@@ -62,58 +51,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Öğrenci giriş
-  const studentLogin = async (studentNumber, password) => {
-    try {
-      const api = (await import('../services/api')).default;
-      const response = await api.post('/students/login', {
-        student_number: studentNumber,
-        password: password
-      });
-      
-      const { access_token, student: studentInfo } = response.data;
-      
-      // Token ve öğrenci bilgilerini kaydet
-      localStorage.setItem('studentToken', access_token);
-      localStorage.setItem('studentData', JSON.stringify(studentInfo));
-      setStudent(studentInfo);
-      
-      return { success: true };
-    } catch (error) {
-      console.error('Student login error:', error);
-      // Hata durumunda temizle
-      localStorage.removeItem('studentToken');
-      localStorage.removeItem('studentData');
-      throw error;
-    }
-  };
-
-  // Admin çıkış
   const logout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('userData');
     setUser(null);
   };
 
-  // Öğrenci çıkış
-  const studentLogout = () => {
-    localStorage.removeItem('studentToken');
-    localStorage.removeItem('studentData');
-    setStudent(null);
-  };
-
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      student,
-      login, 
-      logout, 
-      studentLogin,
-      studentLogout,
-      loading, 
-      isAuthenticated: !!user,
-      isStudentAuthenticated: !!student
-    }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );

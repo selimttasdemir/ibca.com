@@ -1,0 +1,23 @@
+/* Admin panelinde metin seçimine ve kopyalamaya izin ver */
+.admin-panel {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+}
+
+.admin-panel * {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+}
+
+/* Admin panelinde görüntülerin sürüklenmesine izin ver */
+.admin-panel img {
+    -webkit-user-drag: auto;
+    -khtml-user-drag: auto;
+    -moz-user-drag: auto;
+    -o-user-drag: auto;
+    pointer-events: auto !important;
+}

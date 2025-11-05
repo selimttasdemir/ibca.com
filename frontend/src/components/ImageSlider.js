@@ -1,13 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
-import { mockGallery } from '../data/mockData';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
+import api from '../services/api';
 
 const ImageSlider = () => {
   const { currentTheme } = useTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const photos = mockGallery.filter(item => item.type === 'photo');
+  const [photos, setPhotos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Gallery'den fotoğrafları çek
+  useEffect(() => {
+    const fetchPhotos = async () => {
+      try {
+        const response = await api.get('/gallery');
+        const galleryPhotos = response.data.filter(item => item.type === 'photo');
+        setPhotos(galleryPhotos);
+      } catch (error) {
+        console.error('Fotoğraflar yüklenirken hata:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPhotos();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -25,7 +43,35 @@ const ImageSlider = () => {
     setCurrentIndex((prev) => (prev + 1) % photos.length);
   };
 
-  if (photos.length === 0) return null;
+  if (loading) {
+    return (
+      <div 
+        className="relative w-full h-[400px] rounded-xl overflow-hidden shadow-2xl flex items-center justify-center"
+        style={{ 
+          borderColor: currentTheme.border, 
+          borderWidth: '3px',
+          backgroundColor: currentTheme.card 
+        }}
+      >
+        <p style={{ color: currentTheme.text }}>Fotoğraflar yükleniyor...</p>
+      </div>
+    );
+  }
+
+  if (photos.length === 0) {
+    return (
+      <div 
+        className="relative w-full h-[400px] rounded-xl overflow-hidden shadow-2xl flex items-center justify-center"
+        style={{ 
+          borderColor: currentTheme.border, 
+          borderWidth: '3px',
+          backgroundColor: currentTheme.card 
+        }}
+      >
+        <p style={{ color: currentTheme.text }}>Henüz fotoğraf eklenmemiş</p>
+      </div>
+    );
+  }
 
   return (
     <div 
@@ -35,7 +81,7 @@ const ImageSlider = () => {
       {/* Image */}
       <div className="relative w-full h-full">
         <img
-          src={photos[currentIndex].url}
+          src={`http://localhost:8000${photos[currentIndex].image_url}`}
           alt={photos[currentIndex].title}
           className="w-full h-full object-cover transition-opacity duration-500"
         />

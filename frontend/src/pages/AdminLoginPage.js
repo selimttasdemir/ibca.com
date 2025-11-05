@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { useTheme } from '../context/ThemeContext';
@@ -9,15 +9,23 @@ import { Button } from '../components/ui/button';
 import { Label } from '../components/ui/label';
 import { useToast } from '../hooks/use-toast';
 import { Lock, User } from 'lucide-react';
+import '../styles/admin.css';
 
 const AdminLoginPage = () => {
   const { t } = useLanguage();
   const { currentTheme } = useTheme();
-  const { login } = useAuth();
+  const { login, user, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
+
+  // Eğer admin zaten giriş yapmışsa dashboard'a yönlendir
+  useEffect(() => {
+    if (!authLoading && isAuthenticated && user && user.role === 'admin') {
+      navigate('/admin/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, user, authLoading, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,7 +52,7 @@ const AdminLoginPage = () => {
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-center py-12 px-4"
+      className="admin-panel min-h-screen flex items-center justify-center py-12 px-4"
       style={{ backgroundColor: currentTheme.background }}
     >
       <Card 

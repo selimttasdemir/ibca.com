@@ -14,7 +14,7 @@ from typing import List, Optional
 from pathlib import Path
 import os
 import logging
-from datetime import timedelta
+from datetime import timedelta, datetime
 import json
 
 # Yerel modülleri import et
@@ -1346,12 +1346,28 @@ async def view_image(filename: str):
 # Include the router in the main app
 app.include_router(api_router)
 
+# Root endpoint
+@app.get("/")
+async def root():
+    return {
+        "message": "IBCA Academic Website API",
+        "status": "running",
+        "docs": "/docs",
+        "version": "1.0.0"
+    }
+
+# Health check endpoint
+@app.get("/health")
+async def health_check():
+    return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
     allow_origins=[
         "http://localhost:3000",
+        "https://ibca-com.onrender.com",
         "https://ibca-frontend.onrender.com",
     ],
     allow_methods=["*"],
